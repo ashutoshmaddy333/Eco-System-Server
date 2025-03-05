@@ -1,99 +1,119 @@
 const mongoose = require('mongoose');
 const BaseListing = require('./BaseListing');
+const citiesByState = require('../models/Cities') || {}; // Prevents crash if undefined
 
-const MatrimonyListing = BaseListing.discriminator('MatrimonyListing', new mongoose.Schema({
-    personalDetails: {
+// Validate citiesByState structure
+if (typeof citiesByState !== 'object' || Array.isArray(citiesByState)) {
+    throw new Error("Invalid citiesByState structure. Expected an object with states as keys.");
+}
+
+const MatrimonyListing = BaseListing.discriminator(
+    'MatrimonyListing',
+    new mongoose.Schema({
+        // Basic Information
+        firstName: {
+            type: String,
+            required: [true, 'First name is required'],
+            trim: true
+        },
+        middleName: {
+            type: String,
+            trim: true
+        },
+        lastName: {
+            type: String,
+            required: [true, 'Last name is required'],
+            trim: true
+        },
+        gender: {
+            type: String,
+            required: [true, 'Gender is required'],
+            enum: ['Male', 'Female', 'Other']
+        },
         age: {
             type: Number,
             required: [true, 'Age is required'],
             min: [18, 'Minimum age is 18'],
             max: [80, 'Maximum age is 80']
         },
-        gender: {
-            type: String,
-            required: [true, 'Gender is required'],
-            enum: ['male', 'female', 'other']
-        },
-        maritalStatus: {
-            type: String,
-            enum: ['never-married', 'divorced', 'widowed', 'separated']
-        }
-    },
-    physicalAttributes: {
+
+        // Physical Attributes
         height: {
             type: Number, // in cm
+            required: [true, 'Height is required'],
             min: [100, 'Minimum height is 100 cm'],
             max: [250, 'Maximum height is 250 cm']
         },
         weight: {
             type: Number, // in kg
+            required: [true, 'Weight is required'],
             min: [30, 'Minimum weight is 30 kg'],
             max: [300, 'Maximum weight is 300 kg']
         },
-        bodyType: {
+
+        // Social Details
+        maritalStatus: {
             type: String,
-            enum: ['slim', 'average', 'athletic', 'heavy']
-        }
-    },
-    professionalDetails: {
-        education: {
-            degree: String,
-            field: String,
-            institution: String
+            required: [true, 'Marital status is required'],
+            enum: ['Single', 'Married', 'Divorced', 'Widowed']
+        },
+        religion: {
+            type: String,
+            required: [true, 'Religion is required'],
+            trim: true
+        },
+        caste: {
+            type: String,
+            trim: true // Optional field now
         },
         occupation: {
             type: String,
+            required: [true, 'Occupation is required'],
+            enum: ['Employed', 'Self-Employed', 'Student', 'Unemployed'],
             trim: true
         },
-        annualIncome: {
-            type: Number,
-            min: [0, 'Income cannot be negative']
-        }
-    },
-    religiousBackground: {
-        religion: String,
-        caste: String,
-        motherTongue: String
-    },
-    preferences: {
-        ageRange: {
-            min: {
-                type: Number,
-                min: [18, 'Minimum age is 18']
-            },
-            max: {
-                type: Number,
-                max: [80, 'Maximum age is 80']
+
+        // Location Information
+        state: {
+            type: String,
+            required: true,
+            enum: Object.keys(citiesByState) // Ensure valid states
+        },
+        city: {
+            type: String,
+            required: true,
+            validate: {
+                validator: function (city) {
+                    return citiesByState[this.state]?.includes(city);
+                },
+                message: 'Selected city is not valid for the chosen state.'
             }
         },
-        height: {
-            min: Number,
-            max: Number
-        },
-        maritalStatus: [{
+        pincode: {
             type: String,
-            enum: ['never-married', 'divorced', 'widowed', 'separated']
-        }],
-        religion: [String],
-        occupation: [String]
-    },
-    location: {
-        city: String,
-        state: String,
-        country: String
-    },
-    contact: {
-        email: {
-            type: String,
-            lowercase: true,
+            required: true,
             trim: true,
-            match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
+            match: [/^\d{6}$/, 'Please provide a valid 6-digit pincode']
         },
-        phone: {
-            type: String,
-            trim: true
+
+        // File Upload
+        documents: {
+            type: [String], // Allows multiple document URLs
+            validate: {
+                validator: function (docs) {
+                    return Array.isArray(docs) && docs.length <= 3;
+                },
+                message: 'Maximum of 3 documents allowed'
+            }
+        },
+
+        // Terms Acceptance
+        termsAccepted: {
+            type: Boolean,
+            required: [true, 'You must accept the terms and conditions'],
+            default: false
         }
-    }
-}));
+    })
+);
 
 module.exports = MatrimonyListing;
