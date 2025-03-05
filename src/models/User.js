@@ -113,18 +113,27 @@ UserSchema.methods.generateOTP = function () {
 };
 
 // 🔹 Method to verify OTP
-UserSchema.methods.verifyOTP = function (otpCode) {
-    if (!this.otp || !this.otp.code) return false;
-
-    const isValid = this.otp.code === otpCode && this.otp.expiresAt > new Date();
-
-    if (isValid) {
-        this.otp = undefined;
-        this.isVerified = true;
+UserSchema.methods.verifyOTP = async function (otpCode) {
+    if (!this.otp || !this.otp.code) {
+        return { success: false, message: "OTP not found." };
     }
 
-    return isValid;
+    if (this.otp.expiresAt < new Date()) {
+        return { success: false, message: "OTP has expired." };
+    }
+
+    if (this.otp.code !== otpCode) {
+        return { success: false, message: "Invalid OTP." };
+    }
+
+    // OTP is valid, mark the user as verified
+    this.isVerified = true;
+    this.set('otp', undefined); // Remove OTP
+    await this.save(); // Save the changes
+
+    return { success: true, message: "OTP verified successfully." };
 };
+
 
 const User = mongoose.model('User', UserSchema);
 
