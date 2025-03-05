@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const { generateToken } = require('../middleware/authMiddleware');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+
 
 
 // Configure nodemailer transporter
