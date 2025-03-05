@@ -4,12 +4,20 @@ const cities = require('./Cities');
 
 const UserSchema = new mongoose.Schema(
     {
+        username: {
+            type: String,
+            required: [true, 'Username is required'],
+            unique: true,
+            trim: true,
+        },
         firstName: {
             type: String,
+            required: [true, 'First name is required'],
             trim: true,
         },
         lastName: {
             type: String,
+            required: [true, 'Last name is required'],
             trim: true,
         },
         email: {
@@ -32,6 +40,7 @@ const UserSchema = new mongoose.Schema(
         gender: {
             type: String,
             enum: ['Male', 'Female', 'Other'],
+            required: true,
         },
         pincode: {
             type: String,
@@ -60,20 +69,14 @@ const UserSchema = new mongoose.Schema(
             required: [true, 'Password is required'],
             minlength: [6, 'Password should be at least 6 characters long'],
         },
-        confirmPassword: {
-            type: String,
-            required: [true, 'Confirm password is required'],
-            validate: {
-                validator: function (confirmPassword) {
-                    return confirmPassword === this.password;
-                },
-                message: 'Passwords do not match',
-            },
-        },
         role: {
             type: String,
             enum: ['user', 'admin'],
             default: 'user',
+        },
+        isVerified: {
+            type: Boolean,
+            default: false,
         },
     },
     {
@@ -81,25 +84,25 @@ const UserSchema = new mongoose.Schema(
     }
 );
 
-// Hash password before saving
+// 🔹 Remove confirmPassword before saving
 UserSchema.pre('save', async function (next) {
-    if (!this.isModified('profile.password')) return next();
+    if (!this.isModified('password')) return next();
 
     try {
         const salt = await bcrypt.genSalt(10);
-        this.profile.password = await bcrypt.hash(this.profile.password, salt);
+        this.password = await bcrypt.hash(this.password, salt);
         next();
     } catch (error) {
         next(error);
     }
 });
 
-// Method to check password validity
+// 🔹 Method to check password validity
 UserSchema.methods.isValidPassword = async function (candidatePassword) {
-    return bcrypt.compare(candidatePassword, this.profile.password);
+    return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Method to generate OTP
+// 🔹 Method to generate OTP
 UserSchema.methods.generateOTP = function () {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     this.otp = {
@@ -109,7 +112,7 @@ UserSchema.methods.generateOTP = function () {
     return otp;
 };
 
-// Method to verify OTP
+// 🔹 Method to verify OTP
 UserSchema.methods.verifyOTP = function (otpCode) {
     if (!this.otp || !this.otp.code) return false;
 

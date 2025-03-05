@@ -18,16 +18,26 @@ const transporter = nodemailer.createTransport({
 // @route   POST /api/auth/register
 
 exports.registerUser = async (req, res) => {
-    const { firstName, lastName, email, phoneNumber, gender, pincode, state, city, password, confirmPassword, role } = req.body;
+    const { username, firstName, lastName, email, phoneNumber, gender, pincode, state, city, password, confirmPassword, role } = req.body;
+
+    // Check if any required field is missing
+    if (!username || !firstName || !lastName || !email || !phoneNumber || !gender || !pincode || !state || !city || !password || !confirmPassword) {
+        return res.status(400).json({
+            success: false,
+            message: "All fields are required."
+        });
+    }
 
     try {
         // Check if user already exists
-        const userExists = await User.findOne({ $or: [{ email }, { phoneNumber }] });
+        const userExists = await User.findOne({
+            $or: [{ email }, { phoneNumber }, { username }]
+        });
 
         if (userExists) {
             return res.status(400).json({
                 success: false,
-                message: 'User already exists',
+                message: "User with this email, phone number, or username already exists."
             });
         }
 
@@ -35,7 +45,7 @@ exports.registerUser = async (req, res) => {
         if (password !== confirmPassword) {
             return res.status(400).json({
                 success: false,
-                message: 'Passwords do not match',
+                message: "Passwords do not match."
             });
         }
 
@@ -44,6 +54,7 @@ exports.registerUser = async (req, res) => {
 
         // Create new user
         const user = new User({
+            username,
             firstName,
             lastName,
             email,
@@ -53,38 +64,29 @@ exports.registerUser = async (req, res) => {
             state,
             city,
             password: hashedPassword,
-            confirmPassword: hashedPassword, // Store the hashed password for validation
-            role: role || 'user',
+            confirmPassword: hashedPassword, // Store hashed password for validation
+            role: role || "user",
         });
 
         // Generate OTP
         const otp = user.generateOTP();
         await user.save();
 
-        // Send OTP via email (uncomment if needed)
-        // await transporter.sendMail({
-        //     from: process.env.EMAIL_USER,
-        //     to: email,
-        //     subject: 'Verify Your Account',
-        //     text: `Your OTP is: ${otp}. It will expire in 10 minutes.`,
-        // });
-
         res.status(201).json({
             success: true,
-            message: 'User registered. Check your email for OTP verification.',
+            message: "User registered. Check your email for OTP verification.",
             userId: user._id,
-            otp: otp,
+            otp: otp
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Server error during registration',
-            error: error.message,
+            message: "Server error during registration",
+            error: error.message
         });
     }
 };
-
 
 
 // @desc    Verify OTP
