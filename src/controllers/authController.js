@@ -2,6 +2,7 @@ const User = require('../models/User');
 const { generateToken } = require('../middleware/authMiddleware');
 const nodemailer = require('nodemailer');
 
+
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail', // Or your preferred email service
@@ -13,61 +14,76 @@ const transporter = nodemailer.createTransport({
 
 // @desc    Register new user
 // @route   POST /api/auth/register
+
 exports.registerUser = async (req, res) => {
-    const { username, email, password, role } = req.body;
+    const { firstName, lastName, email, phoneNumber, gender, pincode, state, city, password, confirmPassword, role } = req.body;
 
     try {
         // Check if user already exists
-        const userExists = await User.findOne({ 
-            $or: [{ email }, { username }] 
-        });
+        const userExists = await User.findOne({ $or: [{ email }, { phoneNumber }] });
 
         if (userExists) {
             return res.status(400).json({
                 success: false,
-                message: 'User already exists'
+                message: 'User already exists',
             });
         }
 
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Passwords do not match',
+            });
+        }
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         // Create new user
-        const user = await User.create({
-            username,
+        const user = new User({
+            firstName,
+            lastName,
             email,
-            password,
+            phoneNumber,
+            gender,
+            pincode,
+            state,
+            city,
+            password: hashedPassword,
+            confirmPassword: hashedPassword, // Store the hashed password for validation
             role: role || 'user',
-            
         });
 
         // Generate OTP
         const otp = user.generateOTP();
         await user.save();
 
-        // Send OTP via email
+        // Send OTP via email (uncomment if needed)
         // await transporter.sendMail({
         //     from: process.env.EMAIL_USER,
         //     to: email,
         //     subject: 'Verify Your Account',
-        //     text: `Your OTP is: ${otp}. It will expire in 10 minutes.`
+        //     text: `Your OTP is: ${otp}. It will expire in 10 minutes.`,
         // });
 
         res.status(201).json({
             success: true,
             message: 'User registered. Check your email for OTP verification.',
             userId: user._id,
-            otp: otp
+            otp: otp,
         });
 
-        
-
-        
     } catch (error) {
         res.status(500).json({
             success: false,
             message: 'Server error during registration',
-            error: error.message
+            error: error.message,
         });
     }
 };
+
+
 
 // @desc    Verify OTP
 // @route   POST /api/auth/verify-otp

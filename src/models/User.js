@@ -4,13 +4,13 @@ const cities = require('./Cities');
 
 const UserSchema = new mongoose.Schema(
     {
-        username: {
+        firstName: {
             type: String,
-            required: [true, 'Username is required'],
-            unique: true,
             trim: true,
-            minlength: [3, 'Username must be at least 3 characters long'],
-            maxlength: [50, 'Username cannot exceed 50 characters'],
+        },
+        lastName: {
+            type: String,
+            trim: true,
         },
         email: {
             type: String,
@@ -23,69 +23,57 @@ const UserSchema = new mongoose.Schema(
                 'Please provide a valid email address',
             ],
         },
+        phoneNumber: {
+            type: String,
+            required: [true, 'Mobile number is required'],
+            unique: true,
+            match: [/^\d{10}$/, 'Please enter a valid 10-digit mobile number'],
+        },
+        gender: {
+            type: String,
+            enum: ['Male', 'Female', 'Other'],
+        },
+        pincode: {
+            type: String,
+            required: [true, 'Pincode is required'],
+            minlength: [6, 'Enter a valid pincode'],
+            maxlength: [6, 'Enter a valid pincode'],
+        },
+        state: {
+            type: String,
+            enum: Object.keys(cities),
+            required: true,
+        },
+        city: {
+            type: String,
+            required: true,
+            validate: {
+                validator: function (value) {
+                    return cities[this.state]?.includes(value);
+                },
+                message: (props) =>
+                    `${props.value} is not a valid city for the selected state.`,
+            },
+        },
+        password: {
+            type: String,
+            required: [true, 'Password is required'],
+            minlength: [6, 'Password should be at least 6 characters long'],
+        },
+        confirmPassword: {
+            type: String,
+            required: [true, 'Confirm password is required'],
+            validate: {
+                validator: function (confirmPassword) {
+                    return confirmPassword === this.password;
+                },
+                message: 'Passwords do not match',
+            },
+        },
         role: {
             type: String,
             enum: ['user', 'admin'],
             default: 'user',
-        },
-        otp: {
-            code: {
-                type: String,
-            },
-            expiresAt: {
-                type: Date,
-            },
-        },
-        isVerified: {
-            type: Boolean,
-            default: false,
-        },
-        profile: {
-            firstName: String,
-            lastName: String,
-            phoneNumber: String,
-            address: String,
-            gender: {
-                type: String,
-                enum: ['Male', 'Female', 'Other'],
-            },
-            pincode: {
-                type: String,
-                required: [true, 'Pincode is required'],
-                minlength: [6, 'Enter a valid pincode'],
-                maxlength: [6, 'Enter a valid pincode'],
-            },
-            state: {
-                type: String,
-                enum: Object.keys(cities),
-                required: true,
-            },
-            city: {
-                type: String,
-                required: true,
-                validate: {
-                    validator: function (value) {
-                        return cities[this.state]?.includes(value);
-                    },
-                    message: (props) =>
-                        `${props.value} is not a valid city for the selected state.`,
-                },
-            },
-            password: {
-                type: String,
-                required: true,
-                minlength: [6, 'Password should be at least 6 characters long'],
-            },
-            confirmedPassword: {
-                type: String,
-                required: true,
-                validate: {
-                    validator: function (confirmedPassword) {
-                        return confirmedPassword === this.password;
-                    },
-                    message: 'Passwords do not match',
-                },
-            },
         },
     },
     {
