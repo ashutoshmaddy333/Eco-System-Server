@@ -63,11 +63,10 @@ exports.getListings = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skipIndex = (page - 1) * limit;
 
-        // Filtering
+        // Filtering (without price)
         const filters = {};
         if (req.query.status) filters.status = req.query.status;
 
-        // Apply filters without price--------------->
         if (type === 'product') {
             if (req.query.category) {
                 filters.category = req.query.category;
@@ -77,9 +76,84 @@ exports.getListings = async (req, res) => {
             }
         }
 
+        // Sorting (default by newest first)
+        const sortOptions = { createdAt: -1 };
+        if (req.query.sortBy) {
+            const [field, order] = req.query.sortBy.split(':');
+            sortOptions[field] = order === 'desc' ? -1 : 1;
+        }
 
-        // Sorting
-        const sortOptions = { createdAt: -1 }; // Default sort by newest first
+        // Search
+        const searchQuery = req.query.search ? {
+            $or: [
+                { title: { $regex: req.query.search, $options: 'i' } },
+                { description: { $regex: req.query.search, $options: 'i' } }
+            ]
+        } : {};
+
+        // Combine all filters
+        const query = {
+            ...filters,
+            ...searchQuery
+        };
+
+        // Execute query
+        const totalListings = await listingModel.countDocuments(query);
+        const listings = await listingModel
+            .find(query)
+            .sort(sortOptions)
+            .limit(limit)
+            .skip(skipIndex)
+            .populate('user', 'username email');
+
+        res.status(200).json({
+            success: true,
+            count: listings.length,
+            totalListings,
+            totalPages: Math.ceil(totalListings / limit),
+            currentPage: page,
+            data: listings
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching listings',
+            error: error.message
+        });
+    }
+};
+exports.getListings = async (req, res) => {
+    try {
+        const { type } = req.params;
+        const listingModel = ListingModels[type];
+
+        if (!listingModel) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid listing type'
+            });
+        }
+
+        // Pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skipIndex = (page - 1) * limit;
+
+        // Filtering (without price)
+        const filters = {};
+        if (req.query.status) filters.status = req.query.status;
+
+        if (type === 'product') {
+            if (req.query.category) {
+                filters.category = req.query.category;
+            }
+            if (req.query.location) {
+                filters.location = req.query.location;
+            }
+        }
+
+        // Sorting (default by newest first)
+        const sortOptions = { createdAt: -1 };
         if (req.query.sortBy) {
             const [field, order] = req.query.sortBy.split(':');
             sortOptions[field] = order === 'desc' ? -1 : 1;
