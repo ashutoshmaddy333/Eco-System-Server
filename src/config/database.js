@@ -19,9 +19,22 @@ const connectDB = async () => {
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
 
+    // Drop the unique index on username field
+    const db = conn.connection.db;
+    const collection = db.collection("users");
+
+    const indexes = await collection.indexes();
+
+    const indexExists = indexes.some(index => index.name === "username_1");
+
+    if (indexExists) {
+      await collection.dropIndex("username_1");
+    } else {
+return ;
+    }
+
   } catch (error) {
     console.error(`❌ Connection Failed: ${error.message}`);
-    process.exit(1);
   }
 };
 

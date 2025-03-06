@@ -18,20 +18,21 @@ const transporter = nodemailer.createTransport({
 // @route   POST /api/auth/register
 
 exports.registerUser = async (req, res) => {
-    const { username, firstName, lastName, email, phoneNumber, gender, pincode, state, city, password, confirmPassword, role } = req.body;
+    const {  firstName, lastName, email, phoneNumber, gender, pincode, state, city, password, confirmPassword } = req.body;
 
     // Check if any required field is missing
-    if (!username || !firstName || !lastName || !email || !phoneNumber || !gender || !pincode || !state || !city || !password || !confirmPassword) {
-        return res.status(400).json({
-            success: false,
-            message: "All fields are required."
-        });
-    }
+    // if (!firstName || !lastName || !email || !phoneNumber || !gender || !pincode || !state || !city || !password || !confirmPassword) {
+    //     return res.status(400).json({
+    //         success: false,
+    //         message: "All fields are required."
+    //         error: 
+    //     });
+    // }
 
     try {
         // Check if user already exists
         const userExists = await User.findOne({
-            $or: [{ email }, { phoneNumber }, { username }]
+            $or: [{ email }, { phoneNumber }]
         });
 
         if (userExists) {
@@ -54,7 +55,7 @@ exports.registerUser = async (req, res) => {
 
         // Create new user
         const user = new User({
-            username,
+           
             firstName,
             lastName,
             email,
@@ -65,7 +66,6 @@ exports.registerUser = async (req, res) => {
             city,
             password: hashedPassword,
             confirmPassword: hashedPassword, // Store hashed password for validation
-            role: role || "user",
         });
 
         // Generate OTP
@@ -123,9 +123,7 @@ exports.verifyOTP = async (req, res) => {
             token,
             user: {
                 id: user._id,
-                username: user.username,
                 email: user.email,
-                role: user.role
             }
         });
     } catch (error) {
@@ -149,17 +147,19 @@ exports.loginUser = async (req, res) => {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid credentials'
+                message: 'Invalid email'
             });
         }
 
         // Check password
-        const isMatch = await user.isValidPassword(password);
+        const isMatch = () => {
+            return bcrypt.compare(password, user.password);
+        }
 
         if (!isMatch) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid credentials'
+                message: 'Invalid password'
             });
         }
 
@@ -192,7 +192,6 @@ exports.loginUser = async (req, res) => {
             token,
             user: {
                 id: user._id,
-                username: user.username,
                 email: user.email,
                 role: user.role
             }
@@ -262,7 +261,6 @@ exports.updateUserProfile = async (req, res) => {
             success: true,
             user: {
                 id: user._id,
-                username: user.username,
                 email: user.email,
                 profile: user.profile
             }

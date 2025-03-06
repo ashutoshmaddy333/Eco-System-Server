@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const cities = require('./Cities');
+const { validate } = require('./BaseListing');
 
 const UserSchema = new mongoose.Schema(
     {
-        username: {
-            type: String,
-            required: [true, 'Username is required'],
-            unique: true,
-            trim: true,
-        },
+// username:{
+// type: String,
+// required: [true, 'Username is required'],
+// unique: true,
+// trim: true,
+// },
         firstName: {
             type: String,
             required: [true, 'First name is required'],
@@ -69,15 +70,17 @@ const UserSchema = new mongoose.Schema(
             required: [true, 'Password is required'],
             minlength: [6, 'Password should be at least 6 characters long'],
         },
-        role: {
+        confirmPassword: {
             type: String,
-            enum: ['user', 'admin'],
-            default: 'user',
+            validate: {
+                validator: function (value) {
+                    return value === this.get('password');
+                },
+                message: () =>
+                    'Passwords do not match. Please try again.',
+            },
         },
-        isVerified: {
-            type: Boolean,
-            default: false,
-        },
+       
     },
     {
         timestamps: true, // Enables `createdAt` and `updatedAt`
@@ -98,9 +101,11 @@ UserSchema.pre('save', async function (next) {
 });
 
 // 🔹 Method to check password validity
-UserSchema.methods.isValidPassword = async function (candidatePassword) {
-    return bcrypt.compare(candidatePassword, this.password);
-};
+// UserSchema.methods.isValidPassword = async function (confirm) {
+//    const isMatch = await bcrypt.compare(confirm, this.password);
+//    return isMatch;
+
+// };
 
 // 🔹 Method to generate OTP
 UserSchema.methods.generateOTP = function () {
