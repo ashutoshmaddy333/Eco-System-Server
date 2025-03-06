@@ -17,23 +17,7 @@ const ProductListing = BaseListing.discriminator(
         },
 
         // Category Information
-        category: {
-            type: String,
-            required: [true, 'Category is required'],
-            enum: [
-                "Electronics & Gadgets",
-                "Home & Kitchen",
-                "Fashion & Apparel",
-                "Beauty & Personal Care",
-                "Health & Wellness",
-                "Baby & Kids",
-                "Sports & Outdoors",
-                "Automotive",
-                "Books & Stationery",
-                "Grocery & Food",
-                "Pet Supplies"
-            ]
-        },
+        
         subCategory: {
             type: String,
             required: [true, 'Sub-category is required'],

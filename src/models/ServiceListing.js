@@ -17,11 +17,7 @@ const ServiceListing = BaseListing.discriminator(
         },
 
         // Category Information
-        category: {
-            type: String,
-            required: [true, 'Category is required'],
-            enum: ['Service', 'Job', 'Matrimony']
-        },
+       
         subCategory: {
             type: String,
             required: [true, 'Sub-category is required'],

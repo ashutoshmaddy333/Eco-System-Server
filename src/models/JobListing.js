@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const BaseListing = require('./BaseListing');
 const citiesByState = require('../models/Cities');
+
 const JobListing = BaseListing.discriminator('JobListing', new mongoose.Schema({
     // Job Information
     jobTitle: {
@@ -13,12 +14,7 @@ const JobListing = BaseListing.discriminator('JobListing', new mongoose.Schema({
         trim: true
     },
 
-    // Category Information
-    category: {
-        type: String,
-        required: [true, 'Category is required'],
-        enum: ['Service', 'Job', 'Matrimony']
-    },
+    // Sub-Category Information
     subCategory: {
         type: String,
         required: [true, 'Sub-category is required'],
@@ -26,7 +22,7 @@ const JobListing = BaseListing.discriminator('JobListing', new mongoose.Schema({
     },
 
     // Number of Positions
-    numberOfPositions: {
+    numberOfServices: {
         type: Number,
         required: [true, 'Number of positions is required'],
         min: [1, 'Minimum number of positions is 1']
