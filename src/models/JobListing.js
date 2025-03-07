@@ -3,6 +3,8 @@ const BaseListing = require('./BaseListing');
 const citiesByState = require('../models/Cities');
 
 const JobListing = BaseListing.discriminator('JobListing', new mongoose.Schema({
+    title: { type: String, required: false, trim: true }, // Override as optional
+    description: { type: String, required: false, trim: true }, // Override as optional
     // Job Information
     jobTitle: {
         type: String,

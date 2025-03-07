@@ -10,6 +10,8 @@ if (typeof citiesByState !== 'object' || Array.isArray(citiesByState)) {
 const MatrimonyListing = BaseListing.discriminator(
     'MatrimonyListing',
     new mongoose.Schema({
+        title: { type: String, required: false, trim: true }, // Override as optional
+        description: { type: String, required: false, trim: true }, // Override as optional
         // Basic Information
         firstName: {
             type: String,
