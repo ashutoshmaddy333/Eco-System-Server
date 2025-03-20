@@ -32,6 +32,7 @@ const listingsRoutes = require("./routes/listingsRoutes");
 const interestRoutes = require("./routes/interestRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const modRoutes=require("./routes/modRoutes")
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -39,6 +40,7 @@ app.use("/api/listings", listingsRoutes);
 app.use("/api/interests", interestRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/mod",modRoutes)
 
 // Root Route
 app.get("/", (req, res) => {

@@ -32,6 +32,11 @@ const UserSchema = new mongoose.Schema(
                 'Please provide a valid email address',
             ],
         },
+        role: {
+            type: String,
+            enum: [ 'moderator', 'user'],
+            required: true,
+        },
         phoneNumber: {
             type: String,
             required: [true, 'Mobile number is required'],
