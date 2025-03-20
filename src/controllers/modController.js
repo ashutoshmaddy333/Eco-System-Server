@@ -57,7 +57,11 @@ exports.approveOrRejectProfile = async (req, res) => {
             });
         }
 
-        const user = await User.findById(userId);
+        // Fetch the user and ensure required fields are present
+        const user = await User.findById(userId).select(
+            'city state pincode gender phoneNumber lastName firstName isApproved'
+        );
+
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -65,22 +69,39 @@ exports.approveOrRejectProfile = async (req, res) => {
             });
         }
 
-        if (action === 'approve') {
-            user.isApproved = true;
-        } else if (action === 'reject') {
-            user.isApproved = false;
-        } else {
+        // Check if required fields are present
+        const requiredFields = ['city', 'state', 'pincode', 'gender', 'phoneNumber', 'lastName', 'firstName'];
+        const missingFields = requiredFields.filter((field) => !user[field]);
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'User profile is incomplete',
+                missingFields,
+            });
+        }
+
+        // Validate the action
+        if (action !== 'approve' && action !== 'reject') {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid action. Use "approve" or "reject"',
             });
         }
 
+        // Update the user's approval status
+        user.isApproved = action === 'approve';
         await user.save();
 
         res.status(200).json({
             success: true,
             message: `Profile ${action}ed successfully`,
+            data: {
+                userId: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                isApproved: user.isApproved,
+            },
         });
     } catch (error) {
         res.status(500).json({
