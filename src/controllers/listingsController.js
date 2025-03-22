@@ -2,10 +2,7 @@
     const ServiceListing = require('../models/ServiceListing');
     const JobListing = require('../models/JobListing');
     const MatrimonyListing = require('../models/MatrimonyListing');
-<<<<<<< HEAD
-=======
 const express = require('express');
->>>>>>> e62ecfb (Listing Updated)
 
     // Mapping of listing types to their respective models
     const ListingModels = {
@@ -94,10 +91,7 @@ const express = require('express');
     
             // Execute query
             const totalListings = await listingModel.countDocuments(query);
-<<<<<<< HEAD
-=======
 
->>>>>>> e62ecfb (Listing Updated)
             const listings = await listingModel
                 .find(query)
                 .sort(sortOptions)
@@ -125,10 +119,7 @@ const express = require('express');
     // @route   GET /api/listings/:type/:id
     exports.getSingleListing = async (req, res) => {
         try {
-<<<<<<< HEAD
-=======
 
->>>>>>> e62ecfb (Listing Updated)
             const { type, id } = req.params;
             const listingModel = ListingModels[type];
 
@@ -263,8 +254,6 @@ const express = require('express');
         }
     };
 
-<<<<<<< HEAD
-=======
 
 
  // @desc    Get all listings of My own
@@ -301,7 +290,6 @@ exports.getMyListings = async (req, res) => {
 };
 
 
->>>>>>> e62ecfb (Listing Updated)
     // @desc    Search across all listing types
     // @route   GET /api/listings/search
     exports.searchListings = async (req, res) => {

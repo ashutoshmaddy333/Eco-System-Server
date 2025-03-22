@@ -30,19 +30,11 @@ exports.createInterest = async (req, res) => {
             });
         }
 
-<<<<<<< HEAD
-        const listingIdString = listingId;
-function Convert(listingIdString){
-try {
-    const listingId = new mongoose.Types.ObjectId(listingIdString);
-return listingId    // Now you can use listingId with findById or other MongoDB operations
-=======
 
 function Convert(listingId){
 try {
     const ListingId = new mongoose.Types.ObjectId(listingId);
 return ListingId    // Now you can use listingId with findById or other MongoDB operations
->>>>>>> e62ecfb (Listing Updated)
 } catch (error) {
     console.error("Invalid ObjectId format:", error);
 }
@@ -50,21 +42,14 @@ return ListingId    // Now you can use listingId with findById or other MongoDB 
         // Find the listing
         console.log(ListingModel)
         console.log(listingId)
-<<<<<<< HEAD
-        const listing = await ListingModel.findById(Convert());
-=======
         const listing = await ListingModel.findById(Convert(listingId));
->>>>>>> e62ecfb (Listing Updated)
         if (!listing) {
             return res.status(404).json({
                 success: false,
                 message: 'Listing not found'
             });
         }
-<<<<<<< HEAD
-=======
 
->>>>>>> e62ecfb (Listing Updated)
 console.log(listing)
         // Check if interest already exists
         const existingInterest = await Interest.checkExistingInterest(
@@ -146,11 +131,7 @@ exports.getReceivedInterests = async (req, res) => {
             success: true,
             count: interests.length,
             totalInterests,
-<<<<<<< HEAD
-            totalPages: Math.ceil(totalInterests / limit),
-=======
             totalPages: Math.ceil(totalInterests / limit),       
->>>>>>> e62ecfb (Listing Updated)
             currentPage: page,
             data: interests
         });

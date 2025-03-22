@@ -152,11 +152,7 @@ exports.bulkApproveOrRejectProfiles = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-// Get list of interests shown
-=======
 // Get list of interests shown   
->>>>>>> e62ecfb (Listing Updated)
 exports.getInterests = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -184,11 +180,7 @@ exports.getInterests = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-// Approve or reject an interest
-=======
 // Approve or reject an interest  
->>>>>>> e62ecfb (Listing Updated)
 exports.approveOrRejectInterest = async (req, res) => {
     try {
         const { interestId, action } = req.body; // action: 'approve' or 'reject'
