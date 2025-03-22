@@ -1,2 +1,22 @@
-node_modules
-.env 
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log
+
+# Logs
+logs/
+*.log
+debug.log
+error.log
+
+# Environment variables
+.env
+
+# Cache and build files
+dist/
+build/
+.cache/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
