@@ -129,6 +129,10 @@ AdminDashboardSchema.statics.updateStatistics = async function() {
     };
 
     // Update listing status
+<<<<<<< HEAD
+=======
+    
+>>>>>>> e62ecfb (Listing Updated)
     dashboard.listingStats = {
         totalActive: await ProductListing.countDocuments({ status: 'active' }) +
                      await ServiceListing.countDocuments({ status: 'active' }) +

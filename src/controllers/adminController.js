@@ -23,7 +23,11 @@ function asyncHandler(fn) {
 
 // @desc    Get admin dashboard statistics
 // @route   GET /api/admin/dashboard
+<<<<<<< HEAD
 const getDashboardStatistics = asyncHandler(async (req, res) => {
+=======
+const getDashboardStatistics = asyncHandler(async (req, res) =>{  
+>>>>>>> e62ecfb (Listing Updated)
     // Update and retrieve dashboard statistics
     const dashboard = await AdminDashboard.updateStatistics();
 

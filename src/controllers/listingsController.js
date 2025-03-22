@@ -2,6 +2,10 @@
     const ServiceListing = require('../models/ServiceListing');
     const JobListing = require('../models/JobListing');
     const MatrimonyListing = require('../models/MatrimonyListing');
+<<<<<<< HEAD
+=======
+const express = require('express');
+>>>>>>> e62ecfb (Listing Updated)
 
     // Mapping of listing types to their respective models
     const ListingModels = {
@@ -90,6 +94,10 @@
     
             // Execute query
             const totalListings = await listingModel.countDocuments(query);
+<<<<<<< HEAD
+=======
+
+>>>>>>> e62ecfb (Listing Updated)
             const listings = await listingModel
                 .find(query)
                 .sort(sortOptions)
@@ -117,6 +125,10 @@
     // @route   GET /api/listings/:type/:id
     exports.getSingleListing = async (req, res) => {
         try {
+<<<<<<< HEAD
+=======
+
+>>>>>>> e62ecfb (Listing Updated)
             const { type, id } = req.params;
             const listingModel = ListingModels[type];
 
@@ -251,6 +263,45 @@
         }
     };
 
+<<<<<<< HEAD
+=======
+
+
+ // @desc    Get all listings of My own
+// @route   GET /api/listings/my-listings
+exports.getMyListings = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Fetch listings from all models
+        const listingPromises = Object.values(ListingModels).map(model => 
+            model.find({ user: userId })
+                .populate('user', 'username email')
+        );
+
+        const results = await Promise.all(listingPromises);
+
+        // Organize listings by type
+        const userListings = {};
+        Object.keys(ListingModels).forEach((key, index) => {
+            userListings[key] = results[index];
+        });
+
+        res.status(200).json({
+            success: true,
+            data: userListings
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching user listings',
+            error: error.message
+        });
+    }
+};
+
+
+>>>>>>> e62ecfb (Listing Updated)
     // @desc    Search across all listing types
     // @route   GET /api/listings/search
     exports.searchListings = async (req, res) => {

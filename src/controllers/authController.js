@@ -66,7 +66,11 @@ exports.registerUser = async (req, res) => {
             city,
             password: hashedPassword,
             confirmPassword: hashedPassword,
+<<<<<<< HEAD
             role // Store hashed password for validation
+=======
+            role  : 'user'
+>>>>>>> e62ecfb (Listing Updated)
         });
 
         // Generate OTP
