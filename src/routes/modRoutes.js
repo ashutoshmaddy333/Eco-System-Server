@@ -18,7 +18,31 @@ router.post('/profiles/approve-reject', moderatorMiddleware.ensureModerator, mod
 router.post('/profiles/bulk-approve-reject', moderatorMiddleware.ensureModerator, moderatorController.bulkApproveOrRejectProfiles); // Bulk approve/reject profiles
 
 // Interest moderation routes (require both authentication and moderator access)
+<<<<<<< HEAD
 router.get('/interests', moderatorMiddleware.ensureModerator, moderatorController.getInterests); // Get list of interests
 router.post('/interests/approve-reject', moderatorMiddleware.ensureModerator, moderatorController.approveOrRejectInterest); // Approve/reject an interest
+=======
+router.get("/interests", moderatorMiddleware.ensureModerator, moderatorController.getInterests) // Get list of interests
+router.post(
+  "/interests/approve-reject",
+  moderatorMiddleware.ensureModerator,
+  moderatorController.approveOrRejectInterest,
+) // Approve/reject an interest
+
+// Add new routes for listing moderation
+// Listing moderation routes
+router.get("/listings", moderatorMiddleware.ensureModerator, moderatorController.getListingsForModeration) // Get listings for moderation
+router.post("/listings/approve-reject", moderatorMiddleware.ensureModerator, moderatorController.approveOrRejectListing) // Approve/reject a listing
+router.post(
+  "/listings/bulk-approve-reject",
+  moderatorMiddleware.ensureModerator,
+  moderatorController.bulkApproveOrRejectListings,
+) // Bulk approve/reject listings
+
+// Add this new route after the bulk-approve-reject route
+router.get("/listings/all-ids", moderatorMiddleware.ensureModerator, moderatorController.getAllListingIds) // Get all listing IDs for bulk operations
+
+module.exports = router
+>>>>>>> 5487b44 (all set)
 
 module.exports = router;

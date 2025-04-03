@@ -97,6 +97,7 @@ exports.markNotificationsAsRead = async (req, res) => {
 // @desc    Send email notification
 // @route   Internal method
 exports.sendEmailNotification = async (user, notificationType, content) => {
+<<<<<<< HEAD
     try {
         // Prepare email content based on notification type
         const emailTemplates = {
@@ -137,6 +138,47 @@ exports.sendEmailNotification = async (user, notificationType, content) => {
     } catch (error) {
         console.error('Email notification error:', error);
         return false;
+=======
+  try {
+    // Prepare email content based on notification type
+    const emailTemplates = {
+      interest_received: {
+        subject: "New Interest Received",
+        text: `You have received a new interest: ${content}`,
+      },
+      interest_accepted: {
+        subject: "Interest Accepted",
+        text: `Your interest has been accepted: ${content}`,
+      },
+      interest_rejected: {
+        subject: "Interest Rejected",
+        text: `Your interest has been rejected: ${content}`,
+      },
+      listing_approved: {
+        subject: "Your Ad Has Been Approved",
+        text: `Your listing has been approved: ${content}`,
+      },
+      listing_rejected: {
+        subject: "Your Ad Has Been Rejected",
+        text: `Your listing has been rejected: ${content}. Please review and resubmit if needed.`,
+      },
+      listing_created: {
+        subject: "Your Ad Has Been Created",
+        text: `Your listing has been created and is pending approval: ${content}`,
+      },
+      listing_updated: {
+        subject: "Your Ad Has Been Updated",
+        text: `Your listing has been updated: ${content}`,
+      },
+      message: {
+        subject: "New Message",
+        text: `You have a new message: ${content}`,
+      },
+      default: {
+        subject: "New Notification",
+        text: content,
+      },
+>>>>>>> 5487b44 (all set)
     }
 };
 

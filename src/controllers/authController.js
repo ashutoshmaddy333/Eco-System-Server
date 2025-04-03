@@ -18,6 +18,7 @@ const transporter = nodemailer.createTransport({
 // @route   POST /api/auth/register
 
 exports.registerUser = async (req, res) => {
+<<<<<<< HEAD
     const {  firstName, lastName, email, phoneNumber, gender, pincode, state, city, password, confirmPassword,role } = req.body;
 
     // Check if any required field is missing
@@ -28,6 +29,20 @@ exports.registerUser = async (req, res) => {
     //         error: 
     //     });
     // }
+=======
+  const { firstName, lastName, email, phoneNumber, gender, pincode, state, city, password, confirmPassword } =
+    req.body
+
+    console.log(req.body) 
+  // Check if any required field is missing
+  // if (!firstName || !lastName || !email || !phoneNumber || !gender || !pincode || !state || !city || !password || !confirmPassword) {
+  //     return res.status(400).json({
+  //         success: false,
+  //         message: "All fields are required."
+  //         error:
+  //     });
+  // }
+>>>>>>> 5487b44 (all set)
 
     try {
         // Check if user already exists
@@ -89,6 +104,53 @@ exports.registerUser = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match.",
+      })
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    // Create new user
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      gender,
+      pincode,
+      state,
+      city,
+      password: hashedPassword,
+      confirmPassword: hashedPassword,
+      role: "user",
+    })
+console.log(user)
+    // Generate OTP
+    const otp = user.generateOTP()
+    await user.save()
+
+    res.status(201).json({
+      success: true,
+      message: "User registered. Check your email for OTP verification.",
+      userId: user._id,
+      otp: otp,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error during registration",
+      error: error.message,
+    })
+  }
+}
+>>>>>>> 5487b44 (all set)
 
 // @desc    Verify OTP
 // @route   POST /api/auth/verify-otp

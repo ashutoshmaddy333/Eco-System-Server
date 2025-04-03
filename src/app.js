@@ -8,7 +8,12 @@ const connectDB = require("./config/database"); // Import the MongoDB connection
 dotenv.config(); // Load environment variables
 
 // Initialize Express
+<<<<<<< HEAD
 const app = express();
+=======
+const app = express()
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+>>>>>>> 5487b44 (all set)
 
 // Security Middleware
 app.use(helmet()); // Adds various HTTP headers for security
@@ -22,9 +27,15 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Middleware
+<<<<<<< HEAD
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Body parser for JSON
 app.use(express.urlencoded({ extended: true })); // URL-encoded body parser
+=======
+// app.use(cors()) // Enable CORS
+app.use(express.json()) // Body parser for JSON
+app.use(express.urlencoded({ extended: true })) // URL-encoded body parser
+>>>>>>> 5487b44 (all set)
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");

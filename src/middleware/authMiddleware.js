@@ -62,6 +62,22 @@ const adminProtect = (req, res, next) => {
     });
 };
 
+// Add this new middleware function after adminProtect
+// Middleware to check if user is admin or moderator
+const adminOrModeratorProtect = (req, res, next) => {
+  // Ensure user is authenticated first
+  protect(req, res, () => {
+    if (req.user && (req.user.role === "admin" || req.user.role === "moderator")) {
+      next()
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized as admin or moderator",
+      })
+    }
+  })
+}
+
 // Generate JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -69,8 +85,18 @@ const generateToken = (id) => {
     });
 };
 
+// Update the module.exports to include the new middleware
 module.exports = {
+<<<<<<< HEAD
     protect,
     adminProtect,
     generateToken
 };
+=======
+  protect,
+  adminProtect,
+  adminOrModeratorProtect,
+  generateToken,
+}
+
+>>>>>>> 5487b44 (all set)

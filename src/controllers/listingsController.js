@@ -29,6 +29,7 @@ const express = require('express');
             // Add user from authentication middleware
             req.body.user = req.user.id;
 
+<<<<<<< HEAD
             const listing = new listingModel(req.body);
             await listing.save();
 
@@ -42,6 +43,76 @@ const express = require('express');
                 message: 'Error creating listing',
                 error: error.message
             });
+=======
+    // Set initial status to pending for moderation
+    req.body.status = "pending"
+
+    const listing = new listingModel(req.body)
+    await listing.save()
+
+    // Create notification for the user about pending approval
+    const Notification = require("../models/Notification")
+    await Notification.createNotification({
+      user: req.user.id,
+      type: "listing_created",
+      content: `Your ${type} listing has been created and is pending approval`,
+      relatedEntity: {
+        entityId: listing._id,
+        type: "Listing",
+      },
+    })
+
+    res.status(201).json({
+      success: true,
+      data: listing,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error creating listing",
+      error: error.message,
+    })
+  }
+}
+
+// @desc    Get all listings of a specific type
+// @route   GET /api/listings/:type
+exports.getListings = async (req, res) => {
+  try {
+    const { type } = req.params
+    const listingModel = ListingModels[type]
+
+    if (!listingModel) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid listing type",
+      })
+    }
+
+    // Pagination
+    const page = Number.parseInt(req.query.page) || 1
+    const limit = Number.parseInt(req.query.limit) || 10
+    const skipIndex = (page - 1) * limit
+
+    // Filtering
+    const filters = {}
+    if (req.query.status) filters.status = req.query.status
+
+    // Sorting
+    const sortOptions = { createdAt: -1 } // Default sort by newest first
+    if (req.query.sortBy) {
+      const [field, order] = req.query.sortBy.split(":")
+      sortOptions[field] = order === "desc" ? -1 : 1
+    }
+
+    // Search
+    const searchQuery = req.query.search
+      ? {
+          $or: [
+            { title: { $regex: req.query.search, $options: "i" } },
+            { description: { $regex: req.query.search, $options: "i" } },
+          ],
+>>>>>>> 5487b44 (all set)
         }
     };
 
